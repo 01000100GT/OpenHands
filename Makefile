@@ -2,7 +2,7 @@ SHELL=/usr/bin/env bash
 # Makefile for OpenHands project
 
 # Variables
-BACKEND_HOST ?= "127.0.0.1"
+BACKEND_HOST ?= "0.0.0.0"
 BACKEND_PORT = 3000
 BACKEND_HOST_PORT = "$(BACKEND_HOST):$(BACKEND_PORT)"
 FRONTEND_PORT = 3001
@@ -195,7 +195,9 @@ start-backend:
 # Start frontend
 start-frontend:
 	@echo "$(YELLOW)Starting frontend...$(RESET)"
-	@cd frontend && VITE_BACKEND_HOST=$(BACKEND_HOST_PORT) VITE_FRONTEND_PORT=$(FRONTEND_PORT) npm run dev -- --port $(FRONTEND_PORT) --host $(BACKEND_HOST)
+	@echo "$(BACKEND_HOST_PORT) ~~~~ $(FRONTEND_PORT) ~~~~ $(BACKEND_HOST)"
+# @cd frontend && VITE_BACKEND_HOST=$(BACKEND_HOST_PORT) VITE_FRONTEND_PORT=$(FRONTEND_PORT) npm run dev -- --port $(FRONTEND_PORT) --host $(BACKEND_HOST)
+	@cd frontend && npm run dev -- --port 3001 --host 0.0.0.0
 
 # Common setup for running the app (non-callable)
 _run_setup:
