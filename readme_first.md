@@ -5,6 +5,20 @@
 # docker安装完成后，需要给普通用户赋予执行docker的权限，否则代码运行时会报无权限执行docker
 sudo groupadd docker
 sudo usermod -aG docker $USER
+
+#docker配置proxy
+docker info | grep -i proxy
+sudo mkdir -p /etc/systemd/system/docker.service.d
+sudo vim /etc/systemd/system/docker.service.d/http-proxy.conf
+
+[Service]
+Environment="HTTP_PROXY=http://127.0.0.1:7890/"
+Environment="HTTPS_PROXY=http://127.0.0.1:7890/"
+Environment="NO_PROXY=localhost,127.0.0.0/8,::1"
+
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+
 ```
 
 ## pyproject.toml依赖库说明
@@ -22,7 +36,7 @@ mypy #Mypy 是一个用于Python的静态类型检查器。它帮助开发者在
 flake8 #Flake8 是一个用于 Python 代码检查的工具，它提供了许多检查，包括语法错误、PEP8 样式guide violations 和代码复杂度。
 ```
 
-## config.toml配置文件
+## config.toml配置文件(非必需)
 ``` shell
 #可配置LLM API密钥、LLM模型名称和工作空间目录，创建：
 make setup-config
@@ -66,7 +80,13 @@ BadRequestError: litellm.BadRequestError: LLM Provider NOT provided. Pass in the
 # deepseek不支持连续用户消息，必须用户消息和助手消息交替
 litellm.llms.openai.common_utils.OpenAIError: {"error":{"message":"deepseek-reasoner does not support successive user or assistant messages (messages[5] and messages[6] in your input). You should interleave the user/assistant messages in the message sequence.","type":"invalid_request_error","param":null,"code":"invalid_request_error"}}
 ```
-
+## make docker-dev 添加镜像源
+``` shell
+# 修改./containers/dev/Dockerfile 108行位置，添加镜像源
+RUN \
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
+poetry config repositories.thu https://pypi.tuna.tsinghua.edu.cn/simple
+```
 
 ## posthog三方分析平台
 ``` shell
