@@ -12,10 +12,22 @@ sudo usermod -aG docker $USER
 litellm # litellm是一个用于与OpenAI API交互的Python库，它提供了一种简单的方式来使用OpenAI API。
 uvicorn # uvicorn是一个用于构建ASGI（异步服务器网关接口）应用程序的Python工具。
 
+llama-index # RAG库（不过make时不安装）
+chroma # Chroma是一个开源的向量数据库，用于存储和检索向量嵌入。
+chroma-hnswlib
+
 # 代码质量检查工具
 ruff #Ruff 是一个快速而全面的Python代码检查工具，可以捕获常见的编程错误和风格问题
 mypy #Mypy 是一个用于Python的静态类型检查器。它帮助开发者在运行代码之前检测潜在的类型错误
 flake8 #Flake8 是一个用于 Python 代码检查的工具，它提供了许多检查，包括语法错误、PEP8 样式guide violations 和代码复杂度。
+```
+
+## config.toml配置文件
+``` shell
+#可配置LLM API密钥、LLM模型名称和工作空间目录，创建：
+make setup-config
+或
+copy config.template.toml config.toml
 ```
 
 ## 执行任务前会先构建openhands-runtime的docker镜像
