@@ -106,6 +106,11 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
+#添加镜像源
+RUN \
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
+poetry config repositories.thu https://pypi.tuna.tsinghua.edu.cn/simple
+
 # cache build dependencies
 RUN \
   --mount=type=bind,source=./,target=/app/ \
