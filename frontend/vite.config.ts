@@ -30,7 +30,6 @@ export default defineConfig(({ mode }) => {
       svgr(),
     ],
     server: {
-      host: '0.0.0.0',
       port: FE_PORT,
       proxy: {
         "/api": {
