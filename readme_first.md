@@ -57,6 +57,15 @@ ghcr.io/all-hands-ai/runtime                  oh_v0.27.0_eqomge1neu7gf6pk       
 
 ## 日志
 ``` shell
+
+#日志相关代码
+./openhands/cores/logger.py
+#相关环境变量（默认都为false）
+DEBUG
+DEBUG_LLM
+LOG_ALL_EVENTS
+DEBUG_RUNTIME
+
 # agent执行过程的日志记录
 ./logs/openhands_2025-03-12.log # 控制台日志
 ./logs/llm/
