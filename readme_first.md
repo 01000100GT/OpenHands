@@ -97,7 +97,15 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
 poetry config repositories.thu https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-## posthog三方分析平台
+## Daytona-开源开发环境管理器
+``` shell
+# 官网：https://www.daytona.io/
+# https://app.daytona.io/
+# 文档：https://www.daytona.io/docs/
+# github: https://github.com/daytonaio/daytona
+```
+
+## posthog-三方分析平台
 ``` shell
 # 配置key
 ./openhands/server/config/server_config.py
