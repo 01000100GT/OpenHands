@@ -46,6 +46,7 @@ export LLM_API_KEY="sk_test_12345"
 ./microagents/ # public microagents
 ./openhands/ # 服务端
 ./openhands/resolver # 通过ai去解决issue(好像需要在openhandsCloud开通权限才能用)
+./openhands/runtime/ # 运行时，可使用本地的(docker)，也可使用远程的(并发性和可扩展性更好，比如并行评估，参考：https://docs.all-hands.dev/zh-Hans/modules/usage/runtimes)
 ./openhands/runtime/utils/runtime_templates/Dockerfile.j2 # docker镜像构建模板(agent运行时使用的沙盒环境)
 ./tests/ # 测试用例
 ./workspace/ # 运行时用到的工作目录
@@ -55,9 +56,18 @@ export LLM_API_KEY="sk_test_12345"
 ./README.md # 项目说明
 ```
 
+## ./openhands/resolver 补充说明
+``` shell
+1. 作用：只要用户在github上提交指定格式的issue，github仓库的action就会触发通过 cicd 启动openhands去用ai处理github上的issue，然后创建pr然后push到代码仓库，然后这个openhands的仓库 应该会在cicd那里配置模型的key等一些参数
+2. .github/workflows/openhands-resolver.yml这个就是cicd的代码，里面会执行python -m openhands.resolver.resolve_issue和python -m openhands.resolver.send_pull_request
+```
+
 ## 源码运行（阅读Development.md）
 ``` shell
 # 按照Development.md说明安装运行环境依赖库
+
+# vocde调试
+https://docs.all-hands.dev/zh-Hans/modules/usage/how-to/debugging
 ```
 
 ## pyproject.toml依赖库说明
@@ -159,23 +169,53 @@ export LOG_ALL_EVENTS=true
 make setup-config
 或
 copy config.template.toml config.toml
+
+# 官方配置文档
+https://docs.all-hands.dev/zh-Hans/modules/usage/configuration-options
 ```
 
-## openhands可对接的模型供应商文档
+## openhands模型供应商对接文档
 ``` shell
-# https://docs.litellm.ai/docs/providers
+# 官方文档
+https://docs.all-hands.dev/zh-Hans/modules/usage/llms/openai-llms
+# litellm文档
+https://docs.litellm.ai/docs/providers
+# openrouter文档
+https://openrouter.ai/models
+# 部分模型参数说明文档
+https://docs.all-hands.dev/zh-Hans/modules/usage/llms
 ```
 
-## 整体运行业务流程说明
-### 执行任务前会先构建openhands-runtime的docker镜像
+## 整体架构说明
 ``` shell
-# 容器构建模板路径
+# 官方文档
+https://docs.all-hands.dev/zh-Hans/modules/usage/architecture/backend
+https://docs.all-hands.dev/zh-Hans/modules/usage/architecture/runtime
+# python用到的库
+https://docs.all-hands.dev/zh-Hans/modules/usage/about
+```
+
+## runtime 运行时容器(沙箱)
+``` shell
+# 容器构建模板路径(执行任务前会先构建openhands-runtime的docker镜像)
 ./openhands/runtime/utils/runtime_templates/Dockkerfile.j2
 
 # docker images
 ghcr.io/all-hands-ai/runtime                  oh_v0.27.0_eqomge1neu7gf6pk                    056efc4b5377   38 minutes ago   5.27GB
 # docker ps -a
 39c04af1d377   ghcr.io/all-hands-ai/runtime:oh_v0.27.0_eqomge1neu7gf6pk_3zfbuw12au6y4igc   "/openhands/micromam…"   26 minutes ago   Exited (252) 28 seconds ago                openhands-runtime-4a0bd440b6f74749a1277cf57b3fd5ea
+
+# 也可以使用自定义沙箱
+# 官方文档：
+https://docs.all-hands.dev/zh-Hans/modules/usage/how-to/custom-sandbox-guide
+
+# 常用docker 命令
+# 停止名称以"openhands-runtime-"为前缀的任何容器
+docker ps --filter name=openhands-runtime- --filter status=running -aq | xargs docker stop
+# 删除名称以"openhands-runtime-"为前缀的任何容器
+docker rmi $(docker images --filter name=openhands-runtime- -q --no-trunc)
+# 清理容器/镜像
+docker container prune -f && docker image prune -f
 ```
 
 ## 日志
