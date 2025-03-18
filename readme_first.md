@@ -45,6 +45,7 @@ export LLM_API_KEY="sk_test_12345"
 ./logs/ # 生成的日志所在目录
 ./microagents/ # public microagents
 ./openhands/ # 服务端
+./openhands/resolver # 通过ai去解决issue
 ./openhands/runtime/utils/runtime_templates/Dockerfile.j2 # docker镜像构建模板(agent运行时使用的沙盒环境)
 ./tests/ # 测试用例
 ./workspace/ # 运行时用到的工作目录
