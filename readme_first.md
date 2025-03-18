@@ -57,15 +57,6 @@ ghcr.io/all-hands-ai/runtime                  oh_v0.27.0_eqomge1neu7gf6pk       
 
 ## 日志
 ``` shell
-
-#日志相关代码
-./openhands/cores/logger.py
-#相关环境变量（默认都为false）
-DEBUG
-DEBUG_LLM
-LOG_ALL_EVENTS
-DEBUG_RUNTIME
-
 # agent执行过程的日志记录
 ./logs/openhands_2025-03-12.log # 控制台日志
 ./logs/llm/
@@ -97,21 +88,17 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
 poetry config repositories.thu https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-## Daytona-开源开发环境管理器
-``` shell
-# 官网：https://www.daytona.io/
-# https://app.daytona.io/
-# 文档：https://www.daytona.io/docs/
-# github: https://github.com/daytonaio/daytona
-```
-
-## Runloop 为Ai Agent提供开发环境
-``` shell
-https://docs.runloop.ai/overview/what-is-runloop
-```
-
-## posthog-三方分析平台
+## posthog 三方分析平台
 ``` shell
 # 配置key
 ./openhands/server/config/server_config.py
+```
+
+## Docusaurus 官方文档
+``` shell
+# ./docs目录下是官方文档
+
+# Docusaurus文档
+https://docusaurus.io/zh-CN/docs
+
 ```
