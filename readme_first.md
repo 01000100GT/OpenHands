@@ -1,6 +1,6 @@
 # 源码分析
 
-## docker环境
+## docker环境搭建
 ``` shell
 # docker安装完成后，需要给普通用户赋予执行docker的权限，否则代码运行时会报无权限执行docker
 sudo groupadd docker
@@ -21,6 +21,44 @@ sudo systemctl restart docker
 
 ```
 
+## 翻墙环境搭建
+``` shell
+# 省略
+```
+
+## docker运行（阅读README.md）
+``` shell
+# 首次使用，也可先指定环境变量，再运行docker时使用这些环境变量；或使用docker的-e参数指定
+export WORKSPACE_BASE=$(pwd)/workspace
+export LLM_MODEL="anthropic/claude-3-5-sonnet-20241022"
+export LLM_API_KEY="sk_test_12345"
+```
+
+## 源码目录说明
+``` shell
+./.openhands/microagents/ # private microagents
+./containers/
+./dev_config/ # lint相关
+./docs/ # 官方文档
+./evaluation/ # 压测评估
+./frontend/ # 前端代码
+./logs/ # 生成的日志所在目录
+./microagents/ # public microagents
+./openhands/ # 服务端
+./openhands/runtime/utils/runtime_templates/Dockerfile.j2 # docker镜像构建模板(agent运行时使用的沙盒环境)
+./tests/ # 测试用例
+./workspace/ # 运行时用到的工作目录
+.config.template.toml # CLI和无头模式使用的配置文件
+./Development.md # 开发者文档
+./Makefile # 项目相关命令（编译、运行等）
+./README.md # 项目说明
+```
+
+## 源码运行（阅读Development.md）
+``` shell
+# 按照Development.md说明安装运行环境依赖库
+```
+
 ## pyproject.toml依赖库说明
 ``` shell
 litellm # litellm是一个用于与OpenAI API交互的Python库，它提供了一种简单的方式来使用OpenAI API。
@@ -36,7 +74,85 @@ mypy #Mypy 是一个用于Python的静态类型检查器。它帮助开发者在
 flake8 #Flake8 是一个用于 Python 代码检查的工具，它提供了许多检查，包括语法错误、PEP8 样式guide violations 和代码复杂度。
 ```
 
-## config.toml配置文件(非必需)
+## 编译（宿主环境）
+``` shell
+#切换到python虚拟环境编译
+make build
+```
+
+## 启动模式
+1. GUI模式：
+``` shell
+make run
+
+# 启动后可配置model和api_key
+
+# 配置github令牌，参考官方文档：https://docs.all-hands.dev/zh-Hans/modules/usage/how-to/gui-mode
+```
+2. CLI模式（命令行启动交互式会话）：
+``` shell
+# 参考官方文档：https://docs.all-hands.dev/zh-Hans/modules/usage/how-to/cli-mode
+
+# 需要先生成config.toml
+make setup-config
+
+# 宿主环境运行CLI模式
+poetry run python -m openhands.core.cli
+
+# 也可使用docker指定环境变量后执行openhands.core.cli
+export WORKSPACE_BASE=$(pwd)/workspace
+export LLM_MODEL="anthropic/claude-3-5-sonnet-20241022"
+export LLM_API_KEY="sk_test_12345"
+docker run -it \
+    --pull=always \
+    -e SANDBOX_RUNTIME_CONTAINER_IMAGE=docker.all-hands.dev/all-hands-ai/runtime:0.27-nikolaik \
+    -e SANDBOX_USER_ID=$(id -u) \
+    -e WORKSPACE_MOUNT_PATH=$WORKSPACE_BASE \
+    -e LLM_API_KEY=$LLM_API_KEY \
+    -e LLM_MODEL=$LLM_MODEL \
+    -v $WORKSPACE_BASE:/opt/workspace_base \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v ~/.openhands-state:/.openhands-state \
+    --add-host host.docker.internal:host-gateway \
+    --name openhands-app-$(date +%Y%m%d%H%M%S) \
+    docker.all-hands.dev/all-hands-ai/openhands:0.27 \
+    python -m openhands.core.cli
+```
+3. 无头模式：
+``` shell
+# 参考官方文档：https://docs.all-hands.dev/zh-Hans/modules/usage/how-to/headless-mode
+# 和CLI的区别：CLI 模式是交互式的，更适合主动开发
+
+# 宿主环境运行无头模式
+poetry run python -m openhands.core.main -t "write a bash script that prints hi"
+
+#docker环境运行无头模式
+export WORKSPACE_BASE=$(pwd)/workspace
+export LLM_MODEL="anthropic/claude-3-5-sonnet-20241022"
+export LLM_API_KEY="sk_test_12345"
+docker run -it \
+    --pull=always \
+    -e SANDBOX_RUNTIME_CONTAINER_IMAGE=docker.all-hands.dev/all-hands-ai/runtime:0.28-nikolaik \
+    -e SANDBOX_USER_ID=$(id -u) \
+    -e WORKSPACE_MOUNT_PATH=$WORKSPACE_BASE \
+    -e LLM_API_KEY=$LLM_API_KEY \
+    -e LLM_MODEL=$LLM_MODEL \
+    -e LOG_ALL_EVENTS=true \
+    -v $WORKSPACE_BASE:/opt/workspace_base \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    --add-host host.docker.internal:host-gateway \
+    --name openhands-app-$(date +%Y%m%d%H%M%S) \
+    docker.all-hands.dev/all-hands-ai/openhands:0.28 \
+    python -m openhands.core.main -t "write a bash script that prints hi" --no-auto-continue
+
+# 查看参数
+python -m openhands.core.main --help
+
+# 开启Agent执行日志
+export LOG_ALL_EVENTS=true
+```
+
+## config.toml配置文件(GUI模式无需配置，CLI和无头模式必需配置)
 ``` shell
 #可配置LLM API密钥、LLM模型名称和工作空间目录，创建：
 make setup-config
@@ -44,7 +160,8 @@ make setup-config
 copy config.template.toml config.toml
 ```
 
-## 执行任务前会先构建openhands-runtime的docker镜像
+## 整体运行业务流程说明
+### 执行任务前会先构建openhands-runtime的docker镜像
 ``` shell
 # 容器构建模板路径
 ./openhands/runtime/utils/runtime_templates/Dockkerfile.j2
@@ -80,6 +197,7 @@ BadRequestError: litellm.BadRequestError: LLM Provider NOT provided. Pass in the
 # deepseek不支持连续用户消息，必须用户消息和助手消息交替
 litellm.llms.openai.common_utils.OpenAIError: {"error":{"message":"deepseek-reasoner does not support successive user or assistant messages (messages[5] and messages[6] in your input). You should interleave the user/assistant messages in the message sequence.","type":"invalid_request_error","param":null,"code":"invalid_request_error"}}
 ```
+
 ## make docker-dev 添加镜像源
 ``` shell
 # 修改./containers/dev/Dockerfile 108行位置，添加镜像源
