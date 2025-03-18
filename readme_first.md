@@ -40,12 +40,12 @@ export LLM_API_KEY="sk_test_12345"
 ./containers/
 ./dev_config/ # lint相关
 ./docs/ # 官方文档
-./evaluation/ # 压测评估
+./evaluation/ # 模型评估(有个云并行评估的概念，参考：https://www.all-hands.dev/blog/evaluation-of-llms-as-coding-agents-on-swe-bench-at-30x-speed)
 ./frontend/ # 前端代码
 ./logs/ # 生成的日志所在目录
 ./microagents/ # public microagents
 ./openhands/ # 服务端
-./openhands/resolver # 通过ai去解决issue
+./openhands/resolver # 通过ai去解决issue(好像需要在openhandsCloud开通权限才能用)
 ./openhands/runtime/utils/runtime_templates/Dockerfile.j2 # docker镜像构建模板(agent运行时使用的沙盒环境)
 ./tests/ # 测试用例
 ./workspace/ # 运行时用到的工作目录
