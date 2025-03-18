@@ -161,6 +161,11 @@ make setup-config
 copy config.template.toml config.toml
 ```
 
+## openhands可对接的模型供应商文档
+``` shell
+# https://docs.litellm.ai/docs/providers
+```
+
 ## 整体运行业务流程说明
 ### 执行任务前会先构建openhands-runtime的docker镜像
 ``` shell
