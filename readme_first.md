@@ -62,6 +62,12 @@ export LLM_API_KEY="sk_test_12345"
 2. .github/workflows/openhands-resolver.yml这个就是cicd的代码，里面会执行python -m openhands.resolver.resolve_issue和python -m openhands.resolver.send_pull_request
 ```
 
+## 评估 补充说明
+``` shell
+https://docs.all-hands.dev/zh-Hans/modules/usage/how-to/evaluation-harness
+https://www.all-hands.dev/blog/evaluation-of-llms-as-coding-agents-on-swe-bench-at-30x-speed
+```
+
 ## 源码运行（阅读Development.md）
 ``` shell
 # 按照Development.md说明安装运行环境依赖库
