@@ -36,8 +36,27 @@ export LLM_API_KEY="sk_test_12345"
 
 ## 源码目录说明
 ``` shell
+./.github/
+./.github/wokflows/ # github的workflows(CI/DI)
+./.github/wokflows/clean-up.yml # 该工作流用于清理过时和陈旧的工作流程，以防止出现磁盘空间不足的问题（触发：手动）
+./.github/wokflows/deploy-docs.yml # 发布文档
+./.github/wokflows/dummy-agent-test.yml # 测试dummy agent（可能是使用dummy agent冒烟测试下环境能否跑通）
+./.github/wokflows/eval-runner.yml # 运行SWE-Bench评估
+./.github/wokflows/fe-unit-tests.yml # 前端单元测试
+./.github/wokflows/ghcr-build.yml # 构建docker镜像（app镜像和runtime镜像） （触发：手动或PR）
+./.github/wokflows/integration-runner.yml # 好像是评估deepseek和claude3.5 haiku模型能力
+./.github/wokflows/lint-fix.yml # app项目的lint-fix
+./.github/wokflows/lint.yml # app项目的lint
+./.github/wokflows/openhands-resolver.yml # 自动处理issue（触发：issue提交）
+./.github/wokflows/py-unit-tests.yml # 后端单元测试
+./.github/wokflows/pypi-release.yml # 发布到pypi
+./.github/wokflows/run-eval.yml # 触发remote评估（未找到create-branch.yml脚本）
+./.github/wokflows/stale.yml # 工作流程将30天内没有活动的问题和PR标记为“停滞”，并在7天后关闭
+./.github/.codecov.yml # 代码覆盖率报告
 ./.openhands/microagents/ # private microagents
-./containers/
+./containers/ # 镜像构建脚本
+./containers/app/ # app镜像构建
+./containers/runtime/ # runtime镜像构建
 ./dev_config/ # lint相关
 ./docs/ # 官方文档
 ./evaluation/ # 模型评估(有个云并行评估的概念，参考：https://www.all-hands.dev/blog/evaluation-of-llms-as-coding-agents-on-swe-bench-at-30x-speed)
