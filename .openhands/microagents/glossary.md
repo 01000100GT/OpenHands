@@ -24,7 +24,7 @@ A specific capability or function that an agent can perform, such as file manipu
 The current context and status of an agent, including its memory, active tools, and ongoing tasks.
 代理的当前上下文和状态，包括其内存、活动工具和正在进行的任务。
 
-#### CodeAct Agent / CodeAct代理
+#### CodeAct Agent / 编码角色代理
 [A generalist agent in OpenHands](https://arxiv.org/abs/2407.16741) designed to perform tasks by editing and executing code.
 [OpenHands中的通用代理](https://arxiv.org/abs/2407.16741)，设计用于通过编辑和执行代码来完成任务。
 

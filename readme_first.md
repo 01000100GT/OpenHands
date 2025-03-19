@@ -53,26 +53,35 @@ export LLM_API_KEY="sk_test_12345"
 ./.github/wokflows/run-eval.yml # 触发remote评估（未找到create-branch.yml脚本）
 ./.github/wokflows/stale.yml # 工作流程将30天内没有活动的问题和PR标记为“停滞”，并在7天后关闭
 ./.github/.codecov.yml # 代码覆盖率报告
-./.openhands/microagents/ # private microagents
+./.openhands/microagents/ # 专业领域的增强agent(private microagents)
+./.openhands/microagents/glossary.md # 相关名词解释
+./.openhands/microagents/repo.md # 私有repo仓库的microagents例子
 ./containers/ # 镜像构建脚本
 ./containers/app/ # app镜像构建
 ./containers/runtime/ # runtime镜像构建
-./dev_config/ # lint相关
+./dev_config/ # 后端python代码lint相关
 ./docs/ # 官方文档
-./evaluation/ # 模型评估(有个云并行评估的概念，参考：https://www.all-hands.dev/blog/evaluation-of-llms-as-coding-agents-on-swe-bench-at-30x-speed)
+./evaluation/ # 评估工作流（可指定不同的agent进行评估，可自定义评估脚本）
 ./frontend/ # 前端代码
 ./logs/ # 生成的日志所在目录
-./microagents/ # public microagents
-./openhands/ # 服务端
+./microagents/ # 专业领域的增强agent(public microagents)
+./openhands/ # 后端python服务端
 ./openhands/resolver # 通过ai去解决issue(好像需要在openhandsCloud开通权限才能用)
 ./openhands/runtime/ # 运行时，可使用本地的(docker)，也可使用远程的(并发性和可扩展性更好，比如并行评估，参考：https://docs.all-hands.dev/zh-Hans/modules/usage/runtimes)
 ./openhands/runtime/utils/runtime_templates/Dockerfile.j2 # docker镜像构建模板(agent运行时使用的沙盒环境)
 ./tests/ # 测试用例
 ./workspace/ # 运行时用到的工作目录
-.config.template.toml # CLI和无头模式使用的配置文件
-./Development.md # 开发者文档
+.config.template.toml # CLI和无头模式使用的配置文件模板(可复制一份.config.toml进行配置)
+./Development.md # 开发者开发环境配置文档
 ./Makefile # 项目相关命令（编译、运行等）
-./README.md # 项目说明
+./README.md # 项目说明（docker方式启动命令）
+```
+
+## microagents 补充说明
+``` shell
+1. 提示词增强，提供领域特定知识、仓库特定上下文和任务特定工作流
+2. 分public和private，在openhands项目下的"./microagents/"目录下的是公共的，在"./.openhands/microagents/"这个目录下的是自己私有的
+
 ```
 
 ## ./openhands/resolver 补充说明
@@ -81,13 +90,19 @@ export LLM_API_KEY="sk_test_12345"
 2. .github/workflows/openhands-resolver.yml这个就是cicd的代码，里面会执行python -m openhands.resolver.resolve_issue和python -m openhands.resolver.send_pull_request
 ```
 
-## 评估 补充说明
+## evaluation评估工作流 补充说明
 ``` shell
-https://docs.all-hands.dev/zh-Hans/modules/usage/how-to/evaluation-harness
+# 云并行评估的概念（包括远程评估）：
 https://www.all-hands.dev/blog/evaluation-of-llms-as-coding-agents-on-swe-bench-at-30x-speed
+# 评估工作流官方说明文档
+https://docs.all-hands.dev/zh-Hans/modules/usage/how-to/evaluation-harness
+# 评估agent分类(每个agent都有run_infer.py)
+./evaluation/README.md
+# 人工干预函数
+user_response_fn
 ```
 
-## 源码运行（阅读Development.md）
+## 源码运行（请阅读Development.md）
 ``` shell
 # 按照Development.md说明安装运行环境依赖库
 
@@ -269,7 +284,7 @@ BadRequestError: litellm.BadRequestError: LLM Provider NOT provided. Pass in the
 litellm.llms.openai.common_utils.OpenAIError: {"error":{"message":"deepseek-reasoner does not support successive user or assistant messages (messages[5] and messages[6] in your input). You should interleave the user/assistant messages in the message sequence.","type":"invalid_request_error","param":null,"code":"invalid_request_error"}}
 ```
 
-## make docker-dev 添加镜像源
+## make docker-dev 的环境下配置python镜像源
 ``` shell
 # 修改./containers/dev/Dockerfile 108行位置，添加镜像源
 RUN \
