@@ -109,8 +109,25 @@ user_response_fn
 # vocde调试
 https://docs.all-hands.dev/zh-Hans/modules/usage/how-to/debugging
 ```
-
-## pyproject.toml依赖库说明
+## 前端依赖库说明(./frontend/package.json)
+``` shell
+@heroui/react # 前端UI库
+@react-router/node # 为在 Node.js 服务器端渲染（SSR）场景下使用 React Router 提供了支持
+@react-types/shared # 共享React类型定义(预定义的一些类型，可直接使用这些类型，或自定义类型时继承这些类型)
+@stripe/react-stripe-js # Stripe 支付功能SDK
+@tanstack/react-query # 状态管理库(重要，需要看懂用法，否则看不懂代码)
+@xterm/xterm # web版Terminal终端
+framer-motion # 动画库
+isbot # 检测一个用户代理（User-Agent）是否为机器人
+jose # JWT(JSON Web Token)库
+monaco-editor # 微软web版代码编辑器(重要)
+posthog-js # posthog分析用户行为的三方平台库
+remark-gfm # remark插件，用于解析GitHub Flavored Markdown
+sirv-cli # 静态文件服务
+socket.io-client # 跨平台WebSocket库，跨前后端；前端使用时使用标准websocket接口；Node.js服务端使用时可依赖ws库
+web-vitals # 是一个由 Google 开发的轻量级 JavaScript 库，用于在真实用户环境中测量和报告重要的网页性能指标。这些指标被称为 “Web Vitals”，它们对于评估网页的用户体验至关重要
+```
+## 后端依赖库说明(./pyproject.toml)
 ``` shell
 litellm # litellm是一个用于与OpenAI API交互的Python库，它提供了一种简单的方式来使用OpenAI API。
 uvicorn # uvicorn是一个用于构建ASGI（异步服务器网关接口）应用程序的Python工具。
