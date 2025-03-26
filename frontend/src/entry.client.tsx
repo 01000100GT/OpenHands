@@ -22,12 +22,12 @@ function PosthogInit() {
   const { data: config } = useConfig();
 
   React.useEffect(() => {
-    if (config?.POSTHOG_CLIENT_KEY) {
-      posthog.init(config.POSTHOG_CLIENT_KEY, {
-        api_host: "https://us.i.posthog.com",
-        person_profiles: "identified_only",
-      });
-    }
+    // if (config?.POSTHOG_CLIENT_KEY) {
+    //   posthog.init(config.POSTHOG_CLIENT_KEY, {
+    //     api_host: "https://us.i.posthog.com",
+    //     person_profiles: "identified_only",
+    //   });
+    // }
   }, [config]);
 
   return null;
