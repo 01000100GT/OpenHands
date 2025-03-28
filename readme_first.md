@@ -66,8 +66,11 @@ export LLM_API_KEY="sk_test_12345"
 ./logs/ # 生成的日志所在目录
 ./microagents/ # 专业领域的增强agent(public microagents)
 ./openhands/ # 后端python服务端
+./openhands/controller/agent_controller.py # **重要**：agent控制类(既可以作为主控制类，又可以作为代理子控制类)
 ./openhands/resolver # 通过ai去解决issue(好像需要在openhandsCloud开通权限才能用)
 ./openhands/runtime/ # 运行时，可使用本地的(docker)，也可使用远程的(并发性和可扩展性更好，比如并行评估，参考：https://docs.all-hands.dev/zh-Hans/modules/usage/runtimes)
+./openhands/runtime/impl/ # **重要**：所有沙箱环境相关类
+./openhands/runtime/impl/docke/dokcer_runtime.py # **重要**：docker沙箱环境
 ./openhands/runtime/utils/runtime_templates/Dockerfile.j2 # docker镜像构建模板(agent运行时使用的沙盒环境)
 ./tests/ # 测试用例
 ./workspace/ # 运行时用到的工作目录
@@ -309,13 +312,13 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
 poetry config repositories.thu https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-## posthog 三方分析平台
+## posthog(三方分析平台)
 ``` shell
 # 配置key
 ./openhands/server/config/server_config.py
 ```
 
-## Docusaurus 官方文档
+## Docusaurus(Facebook开源的静态网站生成器) 官方文档
 ``` shell
 # ./docs目录下是官方文档
 
