@@ -63,17 +63,25 @@ export LLM_API_KEY="sk_test_12345"
 ./docs/ # 官方文档
 ./evaluation/ # 评估工作流（可指定不同的agent进行评估，可自定义评估脚本）
 ./frontend/ # 前端代码
+./frontend/src/context/ws-client-provider.tsx # 前端socket客户端
 ./logs/ # 生成的日志所在目录
 ./microagents/ # 专业领域的增强agent(public microagents)
 ./openhands/ # 后端python服务端
 ./openhands/controller/agent_controller.py # **重要**：agent控制类(既可以作为主控制类，又可以作为代理子控制类)
-./openhands/server/session/agent_session.py # **重要**：agent会话类(由session.py创建)
-./openhands/server/session/session.py # **重要**：初始任务会话创建主入口
+./openhands/security/ # agent执行event的安全分析器，可扩展自定义分析器(参考README.md)
+./openhands/security/invariant/analyzer.py # invariant安全分析器(会启动docker容器，包含浏览器安全)[Invariant Analyzer](https://github.com/invariantlabs-ai/invariant)
+./openhands/server/conversation_manager/standalone_conversation_manager.py # 2. 创建session并create_task
+./openhands/server/routes/manage_conversations.py # 1. 任务开始的入口，启动agent_loop
+./openhands/server/session/agent_session.py # 4. 负责初始化security_analyzer、runtime和agent_controller和EventStream(订阅者数组和事件队列，将添加进队列的事件按顺序发送给订阅者)
+./openhands/server/session/session.py # 3. 负责初始化agent_session，并根据配置初始化agent，然后启动agent_session.start；订阅agent_session的SERVER类型的event事件；对前端发送socket的oh_event事件
+./openhands/server/app.py # 后端服务监听的接口
+./openhands/server/listen.py # 后端服务入口，引入listen_socket、middleware和./openhands/server/app.py
 ./openhands/resolver # 通过ai去解决issue(好像需要在openhandsCloud开通权限才能用)
 ./openhands/runtime/ # 运行时，可使用本地的(docker)，也可使用远程的(并发性和可扩展性更好，比如并行评估，参考：https://docs.all-hands.dev/zh-Hans/modules/usage/runtimes)
 ./openhands/runtime/impl/ # **重要**：所有沙箱环境相关类
 ./openhands/runtime/impl/docke/dokcer_runtime.py # **重要**：docker沙箱环境
 ./openhands/runtime/utils/runtime_templates/Dockerfile.j2 # docker镜像构建模板(agent运行时使用的沙盒环境)
+./openhands/server/listen_socket.py # 监听前端通过socket发送过来的oh_action事件
 ./tests/ # 测试用例
 ./workspace/ # 运行时用到的工作目录
 .config.template.toml # CLI和无头模式使用的配置文件模板(可复制一份.config.toml进行配置)
