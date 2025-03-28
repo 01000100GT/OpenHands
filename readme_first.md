@@ -68,7 +68,7 @@ export LLM_API_KEY="sk_test_12345"
 ./openhands/ # 后端python服务端
 ./openhands/controller/agent_controller.py # **重要**：agent控制类(既可以作为主控制类，又可以作为代理子控制类)
 ./openhands/server/session/agent_session.py # **重要**：agent会话管理类
-./openhands/server/session/session.py # **重要**：会话管创建主入口
+./openhands/server/session/session.py # **重要**：初始任务会话创建主入口
 ./openhands/resolver # 通过ai去解决issue(好像需要在openhandsCloud开通权限才能用)
 ./openhands/runtime/ # 运行时，可使用本地的(docker)，也可使用远程的(并发性和可扩展性更好，比如并行评估，参考：https://docs.all-hands.dev/zh-Hans/modules/usage/runtimes)
 ./openhands/runtime/impl/ # **重要**：所有沙箱环境相关类
