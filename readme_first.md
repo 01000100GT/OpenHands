@@ -63,7 +63,13 @@ export LLM_API_KEY="sk_test_12345"
 ./docs/ # 官方文档
 ./evaluation/ # 评估工作流（可指定不同的agent进行评估，可自定义评估脚本）
 ./frontend/ # 前端代码
+./frontend/src/components/features/chat/chat-interface.tsx # 左侧聊天对话页面
 ./frontend/src/context/ws-client-provider.tsx # 前端socket客户端
+./frontend/src/routes/_oh/route.tsx # 首页(输入任务)
+./frontend/src/routes/_oh.app/route.tsx # app聊天对话和生成代码页面
+./frontend/src/routes/account-settings.tsx # 用户设置页面
+./frontend/src/routes/settings.tsx # 设置页面
+./frontend/src/routes.ts # 前端路由配置
 ./logs/ # 生成的日志所在目录
 ./microagents/ # 专业领域的增强agent(public microagents)
 ./openhands/ # 后端python服务端
@@ -139,6 +145,7 @@ remark-gfm # remark插件，用于解析GitHub Flavored Markdown
 sirv-cli # 静态文件服务
 socket.io-client # 跨平台WebSocket库，跨前后端；前端使用时使用标准websocket接口；Node.js服务端使用时可依赖ws库
 web-vitals # 是一个由 Google 开发的轻量级 JavaScript 库，用于在真实用户环境中测量和报告重要的网页性能指标。这些指标被称为 “Web Vitals”，它们对于评估网页的用户体验至关重要
+clsx # css拼接类库
 ```
 ## 后端依赖库说明(./pyproject.toml)
 ``` shell
