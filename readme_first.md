@@ -65,6 +65,8 @@ export LLM_API_KEY="sk_test_12345"
 ./frontend/ # 前端代码
 ./frontend/src/components/features/chat/chat-interface.tsx # 左侧聊天对话页面
 ./frontend/src/context/ws-client-provider.tsx # 前端socket客户端
+./frontend/src/hooks/query/use-active-host.ts # 获取运行时使用的主机
+./frontend/src/hooks/query/use-ai-config-options.ts # 获取所有模型和所有agent和所有安全检测器
 ./frontend/src/routes/_oh/route.tsx # 首页(输入任务)
 ./frontend/src/routes/_oh.app/route.tsx # app聊天对话和生成代码页面
 ./frontend/src/routes/account-settings.tsx # 用户设置页面
@@ -82,6 +84,7 @@ export LLM_API_KEY="sk_test_12345"
 ./frontend/src/utils/beep.tsx # 提示音
 ./frontend/src/utils/error-handler.ts # 错误处理(会上报posthog)
 ./frontend/src/utils/generate-github-auth-url.ts # 感觉是生成openhands自家的github的授权url
+./frontend/src/utils/verified-models.ts # openhands自己验证过可在此项目稳定使用的提供商和模型名单
 ./logs/ # 生成的日志所在目录
 ./microagents/ # 专业领域的增强agent(public microagents)
 ./openhands/ # 后端python服务端
@@ -341,7 +344,7 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
 poetry config repositories.thu https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-## posthog(三方分析平台)
+## posthog(三方分析平台，比如留存率，错误日志等)
 ``` shell
 # 配置key
 ./openhands/server/config/server_config.py
@@ -354,4 +357,9 @@ poetry config repositories.thu https://pypi.tuna.tsinghua.edu.cn/simple
 # Docusaurus文档
 https://docusaurus.io/zh-CN/docs
 
+```
+## 什么是github installations(安装程序)
+``` shell
+# 答：github可以 创建一个app，然后授权app使用仓库代码的权限，有私有和公有模式，github用户可以在市场安装公有模式的app， openhands应该是私有模式
+# 官方文档：https://docs.github.com/en/apps
 ```

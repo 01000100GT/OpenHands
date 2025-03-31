@@ -39,9 +39,11 @@ app = APIRouter(prefix='/api/conversations/{conversation_id}')
 @app.get('/list-files')
 async def list_files(request: Request, conversation_id: str, path: str | None = None):
     """List files in the specified path.
+    列出指定路径中的文件
 
     This function retrieves a list of files from the agent's runtime file store,
     excluding certain system and hidden files/directories.
+    此函数从代理的运行时文件存储中检索文件列表，不包括某些系统和隐藏文件/目录
 
     To list files:
     ```sh
@@ -107,6 +109,7 @@ async def list_files(request: Request, conversation_id: str, path: str | None = 
 @app.get('/select-file')
 async def select_file(file: str, request: Request):
     """Retrieve the content of a specified file.
+    检索指定文件的内容
 
     To select a file:
     ```sh
@@ -151,6 +154,7 @@ async def select_file(file: str, request: Request):
 @app.post('/upload-files')
 async def upload_file(request: Request, conversation_id: str, files: list[UploadFile]):
     """Upload a list of files to the workspace.
+    批量上传文件到工作区
 
     To upload a files:
     ```sh
@@ -246,10 +250,14 @@ async def upload_file(request: Request, conversation_id: str, files: list[Upload
 @app.post('/save-file')
 async def save_file(request: Request):
     """Save a file to the agent's runtime file store.
+    将文件保存到代理的运行时文件存储中
 
     This endpoint allows saving a file when the agent is in a paused, finished,
     or awaiting user input state. It checks the agent's state before proceeding
     with the file save operation.
+    该端点允许在代理处于暂停、完成或停止状态时保存文件，
+    或等待用户输入状态。它在继续之前检查代理的状态
+    使用文件保存操作
 
     Args:
         request (Request): The incoming FastAPI request object.
