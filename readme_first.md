@@ -70,6 +70,18 @@ export LLM_API_KEY="sk_test_12345"
 ./frontend/src/routes/account-settings.tsx # 用户设置页面
 ./frontend/src/routes/settings.tsx # 设置页面
 ./frontend/src/routes.ts # 前端路由配置
+./frontend/src/services/observations.ts # ObservationType.RUN类型的消息有5000长度的限制(写死在代码中)
+./frontend/src/types/action-type.tsx # action枚举定义(用户和agent全部的)
+./frontend/src/types/agent-state.tsx # agent状态枚举定义
+./frontend/src/types/message.tsx # action消息分为用户消息和agent消息; Observation消息
+./frontend/src/types/observation-type.tsx # ObservationType枚举定义
+./frontend/src/types/settings.ts # 设置页面的默认参数值
+./frontend/src/types/tab-option.tsx # app聊天对话 右侧顶部的tab枚举类型
+./frontend/src/utils/suggestions/ # 首页随机推荐的问题(分有代码仓库和无代码仓库2种)
+./frontend/src/utils/amount-is-valid.ts # 金额限制 10-25000
+./frontend/src/utils/beep.tsx # 提示音
+./frontend/src/utils/error-handler.ts # 错误处理(会上报posthog)
+./frontend/src/utils/generate-github-auth-url.ts # 感觉是生成openhands自家的github的授权url
 ./logs/ # 生成的日志所在目录
 ./microagents/ # 专业领域的增强agent(public microagents)
 ./openhands/ # 后端python服务端
