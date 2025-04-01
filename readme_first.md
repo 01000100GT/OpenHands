@@ -64,7 +64,7 @@ export LLM_API_KEY="sk_test_12345"
 ./evaluation/ # 评估工作流（可指定不同的agent进行评估，可自定义评估脚本）
 ./frontend/ # 前端代码
 ./frontend/src/components/features/chat/chat-interface.tsx # 左侧聊天对话页面
-./frontend/src/context/ws-client-provider.tsx # 前端socket客户端
+./frontend/src/context/ws-client-provider.tsx # 前端socket客户端，监听后端发送的oh_event事件，交由frontend/src/services/actions.ts处理
 ./frontend/src/hooks/query/use-active-host.ts # 获取运行时使用的主机
 ./frontend/src/hooks/query/use-ai-config-options.ts # 获取所有模型和所有agent和所有安全检测器
 ./frontend/src/routes/_oh/route.tsx # 首页(输入任务)
@@ -89,6 +89,7 @@ export LLM_API_KEY="sk_test_12345"
 ./microagents/ # 专业领域的增强agent(public microagents)
 ./openhands/ # 后端python服务端
 ./openhands/controller/agent_controller.py # **重要**：agent控制类(既可以作为主控制类，又可以作为代理子控制类)
+./openhands/controller/state/state.py # 缓存agent状态(缓存到本地)
 ./openhands/security/ # agent执行event的安全分析器，可扩展自定义分析器(参考README.md)
 ./openhands/security/invariant/analyzer.py # invariant安全分析器(会启动docker容器，包含浏览器安全)[Invariant Analyzer](https://github.com/invariantlabs-ai/invariant)
 ./openhands/server/conversation_manager/standalone_conversation_manager.py # 2. 创建session并create_task
@@ -102,7 +103,7 @@ export LLM_API_KEY="sk_test_12345"
 ./openhands/runtime/impl/ # **重要**：所有沙箱环境相关类
 ./openhands/runtime/impl/docke/dokcer_runtime.py # **重要**：docker沙箱环境
 ./openhands/runtime/utils/runtime_templates/Dockerfile.j2 # docker镜像构建模板(agent运行时使用的沙盒环境)
-./openhands/server/listen_socket.py # 监听前端通过socket发送过来的oh_action事件
+./openhands/server/listen_socket.py # 监听前端通过socket发送过来的oh_action事件，然后转发给standalone_conversation_manager.py的send_to_event_stream函数->session.py的dispatch函数
 ./tests/ # 测试用例
 ./workspace/ # 运行时用到的工作目录
 .config.template.toml # CLI和无头模式使用的配置文件模板(可复制一份.config.toml进行配置)
@@ -310,7 +311,26 @@ docker rmi $(docker images --filter name=openhands-runtime- -q --no-trunc)
 docker container prune -f && docker image prune -f
 ```
 
-## 日志
+## 一些缓存目录
+``` shell
+# 默认配置文件保存路径
+/tmp/openhands_file_store/settings.json
+# 自定义模型的配置文件保存路径
+ ~/.openhands-state/settings.json
+# filestore的默认缓存路径（可在config.toml中修改）
+~/.openhands-state
+# event事件的缓存路径
+~/.openhands-state/sessions/60f47ccf40bb41faa18c8202b2128c01/events/8.json
+# agent_state缓存路径
+~/.openhands-state/sessions/851ec2f6ba4b407d81a4916c889269f1/agent_state.pkl
+```
+
+## 开启Debug日志
+``` shell
+export DEBUG=1
+```
+
+## 日志缓存目录
 ``` shell
 # agent执行过程的日志记录
 ./logs/openhands_2025-03-12.log # 控制台日志
