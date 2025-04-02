@@ -88,7 +88,7 @@ export LLM_API_KEY="sk_test_12345"
 ./logs/ # 生成的日志所在目录
 ./microagents/ # 专业领域的增强agent(public microagents)
 ./openhands/ # 后端python服务端
-./openhands/controller/agent_controller.py # **重要**：agent控制类(既可以作为主控制类，又可以作为代理子控制类)
+./openhands/controller/agent_controller.py # **重要**：agent控制类(既可以作为主控制类，又可以作为代理子控制类)，_step函数为真正执行task的方法，受限于max_iterations(迭代次数)和max_budget_per_task(最大花费)和stuck(卡住)
 ./openhands/controller/state/state.py # 缓存agent状态(缓存到本地)
 ./openhands/security/ # agent执行event的安全分析器，可扩展自定义分析器(参考README.md)
 ./openhands/security/invariant/analyzer.py # invariant安全分析器(会启动docker容器，包含浏览器安全)[Invariant Analyzer](https://github.com/invariantlabs-ai/invariant)
@@ -110,6 +110,10 @@ export LLM_API_KEY="sk_test_12345"
 ./Development.md # 开发者开发环境配置文档
 ./Makefile # 项目相关命令（编译、运行等）
 ./README.md # 项目说明（docker方式启动命令）
+
+#提示词相关
+./openhands/agenthub/codeact_agent/prompts、
+./openhands/utils/prompt.py
 ```
 
 ## microagents 补充说明
@@ -167,6 +171,8 @@ clsx # css拼接类库
 ``` shell
 litellm # litellm是一个用于与OpenAI API交互的Python库，它提供了一种简单的方式来使用OpenAI API。
 uvicorn # uvicorn是一个用于构建ASGI（异步服务器网关接口）应用程序的Python工具。
+tenacity # 是一个用于 Python 的重试库，它能让你轻松地为函数或方法添加重试机制
+modal # 是一个用于构建和部署执行云函数的库，有点像severless
 
 llama-index # RAG库（不过make时不安装）
 chroma # Chroma是一个开源的向量数据库，用于存储和检索向量嵌入。
@@ -252,8 +258,6 @@ docker run -it \
 # 查看参数
 python -m openhands.core.main --help
 
-# 开启Agent执行日志
-export LOG_ALL_EVENTS=true
 ```
 
 ## config.toml配置文件(GUI模式无需配置，CLI和无头模式必需配置)
@@ -323,11 +327,16 @@ docker container prune -f && docker image prune -f
 ~/.openhands-state/sessions/60f47ccf40bb41faa18c8202b2128c01/events/8.json
 # agent_state缓存路径
 ~/.openhands-state/sessions/851ec2f6ba4b407d81a4916c889269f1/agent_state.pkl
+# 长期记忆llama_index向量库缓存位置
+./cache/sessions/{event_stream.sid}/memory
 ```
 
-## 开启Debug日志
+## 开启调试日志
 ``` shell
+# 开启Debug日志
 export DEBUG=1
+# 开启Agent执行日志
+export LOG_ALL_EVENTS=true
 ```
 
 ## 日志缓存目录
@@ -362,6 +371,12 @@ litellm.llms.openai.common_utils.OpenAIError: {"error":{"message":"deepseek-reas
 RUN \
 pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
 poetry config repositories.thu https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+## daytona （一个为运行AI生成的代码提供安全运行环境的开源平台，本项目可用作runtime环境）
+``` shell
+# 官方文档
+https://www.daytona.io/
 ```
 
 ## posthog(三方分析平台，比如留存率，错误日志等)
