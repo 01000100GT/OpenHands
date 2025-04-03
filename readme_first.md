@@ -373,11 +373,18 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
 poetry config repositories.thu https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-## daytona （一个为运行AI生成的代码提供安全运行环境的开源平台，本项目可用作runtime环境）
+## daytona （一个为运行AI生成的代码提供安全运行环境的开源平台，本项目可用作runtime沙箱环境）
 ``` shell
 # 官方文档
 https://www.daytona.io/
 ```
+
+## Runloop （AI sandbox Devbox，，本项目可用作runtime沙箱环境）
+``` shell
+# 官方文档
+https://docs.runloop.ai/overview/what-is-runloop
+```
+
 
 ## posthog(三方分析平台，比如留存率，错误日志等)
 ``` shell
