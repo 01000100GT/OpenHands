@@ -90,6 +90,7 @@ export LLM_API_KEY="sk_test_12345"
 ./openhands/ # 后端python服务端
 ./openhands/controller/agent_controller.py # **重要**：agent控制类(既可以作为主控制类，又可以作为代理子控制类)，_step函数为真正执行task的方法，受限于max_iterations(迭代次数)和max_budget_per_task(最大花费)和stuck(卡住)
 ./openhands/controller/state/state.py # 缓存agent状态(缓存到本地)
+./openhands/core/config/utils.py # 命令行参数解析和所有配置参数加载
 ./openhands/security/ # agent执行event的安全分析器，可扩展自定义分析器(参考README.md)
 ./openhands/security/invariant/analyzer.py # invariant安全分析器(会启动docker容器，包含浏览器安全)[Invariant Analyzer](https://github.com/invariantlabs-ai/invariant)
 ./openhands/server/conversation_manager/standalone_conversation_manager.py # 2. 创建session并create_task
@@ -334,10 +335,18 @@ docker container prune -f && docker image prune -f
 
 ## 开启调试日志
 ``` shell
-# 开启Debug日志
+# 日志等级(默认:'INFO'，开启DEBUG模式后会变为'DEBUG', )
+export LOG_LEVEL='INFO'
+# 是否记录日志到文件中(默认False，开启DEBUG模式后会变为True)
+export LOG_TO_FILE=1
+# 开启Debug日志(默认:False，开启后)
 export DEBUG=1
-# 开启Agent执行日志
-export LOG_ALL_EVENTS=true
+# 开启大模型日志(默认:False)
+export DEBUG_LLM=1
+# 开启Agent执行日志(开启DEBUG模式后会打印日志)
+export LOG_ALL_EVENTS=1
+# 开启runtime日志
+export DEBUG_RUNTIME=1
 ```
 
 ## 日志缓存目录
@@ -349,9 +358,8 @@ export LOG_ALL_EVENTS=true
 ./logs/llm/25-03-12_11-12/prompt_001.log # prompt日志
 ./logs/llm/25-03-12_11-12/response_001.log # Function call日志
 ```
-![alt 日志](/md_resource/logs.png "日志")
 
-## 控制台错误日志
+## 遇到的控制台错误日志
 ``` shell
 
 #模型不支持
