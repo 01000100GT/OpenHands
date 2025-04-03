@@ -360,6 +360,28 @@ class DockerRuntime(ActionExecutionClient):
                 raise AgentRuntimeDisconnectedError(
                     f'Container {self.container_name} has exited.'
                 )
+            # 新增实际服务检测（关键修改） 等待服务整alive 已经启动。
+            healthcheck_url = f'http://localhost:{self._host_port}/alive'
+            try:
+                response = requests.get(
+                    healthcheck_url,
+                    timeout=5,
+                    headers={'User-Agent': 'OpenHandsRuntimeHealthCheck/1.0'},
+                )
+                response.raise_for_status()
+                # 新增JSON响应验证
+                health_data = response.json()
+
+                if health_data.get('status') != 'ok':
+                    raise ConnectionError(f'Invalid health status: {health_data}')
+
+                self.log('debug', f'健康检查通过: {healthcheck_url} 响应 {health_data}')
+            except requests.exceptions.HTTPError as e:
+                self.log('warning', f'健康检查HTTP异常: {e.response.status_code}')
+                raise ConnectionError(f'HTTP错误: {e.response.status_code}')
+            except requests.exceptions.JSONDecodeError:
+                self.log('error', f'无效的JSON响应: {response.text[:200]}')
+                raise ConnectionError('健康检查返回无效的JSON格式')
         except docker.errors.NotFound:
             raise AgentRuntimeNotFoundError(
                 f'Container {self.container_name} not found.'
@@ -424,7 +446,8 @@ class DockerRuntime(ActionExecutionClient):
 
     def pause(self):
         """Pause the runtime by stopping the container.
-        This is different from container.stop() as it ensures environment variables are properly preserved."""
+        This is different from container.stop() as it ensures environment variables are properly preserved.
+        """
         if not self.container:
             raise RuntimeError('Container not initialized')
 
@@ -437,7 +460,8 @@ class DockerRuntime(ActionExecutionClient):
 
     def resume(self):
         """Resume the runtime by starting the container.
-        This is different from container.start() as it ensures environment variables are properly restored."""
+        This is different from container.start() as it ensures environment variables are properly restored.
+        """
         if not self.container:
             raise RuntimeError('Container not initialized')
 
