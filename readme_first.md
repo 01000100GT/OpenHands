@@ -173,6 +173,7 @@ litellm # litellm是一个用于与OpenAI API交互的Python库，它提供了�
 uvicorn # uvicorn是一个用于构建ASGI（异步服务器网关接口）应用程序的Python工具。
 tenacity # 是一个用于 Python 的重试库，它能让你轻松地为函数或方法添加重试机制
 modal # 是一个用于构建和部署执行云函数的库，有点像severless
+browsergym # 模拟人类在浏览器中的各种操作，例如点击链接、输入文本、滚动页面等，应用场景：1.自动化网页测试 2.信息检索与挖掘
 
 llama-index # RAG库（不过make时不安装）
 chroma # Chroma是一个开源的向量数据库，用于存储和检索向量嵌入。
