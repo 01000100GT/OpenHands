@@ -64,6 +64,7 @@ export LLM_API_KEY="sk_test_12345"
 ./evaluation/ # 评估工作流（可指定不同的agent进行评估，可自定义评估脚本）
 ./frontend/ # 前端代码
 ./frontend/src/components/features/chat/chat-interface.tsx # 左侧聊天对话页面
+./frontend/src/components/shared/modals/settings/model-selector.tsx # 选择模型供应商和模型组件
 ./frontend/src/context/ws-client-provider.tsx # 前端socket客户端，监听后端发送的oh_event事件，交由frontend/src/services/actions.ts处理
 ./frontend/src/hooks/query/use-active-host.ts # 获取运行时使用的主机
 ./frontend/src/hooks/query/use-ai-config-options.ts # 获取所有模型和所有agent和所有安全检测器
@@ -91,19 +92,21 @@ export LLM_API_KEY="sk_test_12345"
 ./openhands/controller/agent_controller.py # **重要**：agent控制类(既可以作为主控制类，又可以作为代理子控制类)，_step函数为真正执行task的方法，受限于max_iterations(迭代次数)和max_budget_per_task(最大花费)和stuck(卡住)
 ./openhands/controller/state/state.py # 缓存agent状态(缓存到本地)
 ./openhands/core/config/utils.py # 命令行参数解析和所有配置参数加载
-./openhands/security/ # agent执行event的安全分析器，可扩展自定义分析器(参考README.md)
-./openhands/security/invariant/analyzer.py # invariant安全分析器(会启动docker容器，包含浏览器安全)[Invariant Analyzer](https://github.com/invariantlabs-ai/invariant)
-./openhands/server/conversation_manager/standalone_conversation_manager.py # 2. 创建session并create_task
-./openhands/server/routes/manage_conversations.py # 1. 任务开始的入口，启动agent_loop
-./openhands/server/session/agent_session.py # 4. 负责初始化security_analyzer、runtime和agent_controller和EventStream(订阅者数组和事件队列，将添加进队列的事件按顺序发送给订阅者)
-./openhands/server/session/session.py # 3. 负责初始化agent_session，并根据配置初始化agent，然后启动agent_session.start；订阅agent_session的SERVER类型的event事件；对前端发送socket的oh_event事件
-./openhands/server/app.py # 后端服务监听的接口
-./openhands/server/listen.py # 后端服务入口，引入listen_socket、middleware和./openhands/server/app.py
+./openhands/llm/llm.py # 大模型交互类(litellm)
 ./openhands/resolver # 通过ai去解决issue(好像需要在openhandsCloud开通权限才能用)
 ./openhands/runtime/ # 运行时，可使用本地的(docker)，也可使用远程的(并发性和可扩展性更好，比如并行评估，参考：https://docs.all-hands.dev/zh-Hans/modules/usage/runtimes)
 ./openhands/runtime/impl/ # **重要**：所有沙箱环境相关类
 ./openhands/runtime/impl/docke/dokcer_runtime.py # **重要**：docker沙箱环境
 ./openhands/runtime/utils/runtime_templates/Dockerfile.j2 # docker镜像构建模板(agent运行时使用的沙盒环境)
+./openhands/security/ # agent执行event的安全分析器，可扩展自定义分析器(参考README.md)
+./openhands/security/invariant/analyzer.py # invariant安全分析器(会启动docker容器，包含浏览器安全)[Invariant Analyzer](https://github.com/invariantlabs-ai/invariant)
+./openhands/server/conversation_manager/standalone_conversation_manager.py # 2. 创建session并create_task
+./openhands/server/routes/manage_conversations.py # 1. 任务开始的入口，启动agent_loop
+./openhands/server/routes/public.py # 大模型列表、agent列表、安全分析器列表
+./openhands/server/session/agent_session.py # 4. 负责初始化security_analyzer、runtime和agent_controller和EventStream(订阅者数组和事件队列，将添加进队列的事件按顺序发送给订阅者)
+./openhands/server/session/session.py # 3. 负责初始化agent_session，并根据配置初始化agent，然后启动agent_session.start；订阅agent_session的SERVER类型的event事件；对前端发送socket的oh_event事件
+./openhands/server/app.py # 后端服务监听的接口
+./openhands/server/listen.py # 后端服务入口，引入listen_socket、middleware和./openhands/server/app.py
 ./openhands/server/listen_socket.py # 监听前端通过socket发送过来的oh_action事件，然后转发给standalone_conversation_manager.py的send_to_event_stream函数->session.py的dispatch函数
 ./tests/ # 测试用例
 ./workspace/ # 运行时用到的工作目录
@@ -279,6 +282,7 @@ https://docs.all-hands.dev/zh-Hans/modules/usage/configuration-options
 https://docs.all-hands.dev/zh-Hans/modules/usage/llms/openai-llms
 # litellm文档
 https://docs.litellm.ai/docs/providers
+https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json
 # openrouter文档
 https://openrouter.ai/models
 # 部分模型参数说明文档
