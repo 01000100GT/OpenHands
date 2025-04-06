@@ -176,7 +176,8 @@ def build_runtime_image_in_folder(
         f'oh_v{oh_version}_{get_tag_for_versioned_image(base_image)}'
     )
     versioned_image_name = f'{runtime_image_repo}:{versioned_tag}'
-    source_tag = f'{lock_tag}_{get_hash_for_source_files()}'
+    # source_tag = f'{lock_tag}_{get_hash_for_source_files()}'
+    source_tag = f'{lock_tag}'  # 固定镜像名称，否则每次修改代码runtime镜像都会重新构建
     hash_image_name = f'{runtime_image_repo}:{source_tag}'
 
     logger.info(f'Building image: {hash_image_name}')
