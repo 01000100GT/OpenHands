@@ -5,8 +5,9 @@ import re
 import sys
 import traceback
 from datetime import datetime
+from logging.handlers import TimedRotatingFileHandler
 from types import TracebackType
-from typing import Any, Literal, Mapping, TextIO
+from typing import Any, Literal, Mapping, MutableMapping, TextIO
 
 import litellm
 from pythonjsonlogger.json import JsonFormatter
@@ -42,7 +43,11 @@ else:
 if DEBUG:
     LOG_LEVEL = 'DEBUG'
 
-LOG_TO_FILE = os.getenv('LOG_TO_FILE', 'False').lower() in ['true', '1', 'yes']
+LOG_TO_FILE = os.getenv('LOG_TO_FILE', str(LOG_LEVEL == 'DEBUG')).lower() in [
+    'true',
+    '1',
+    'yes',
+]
 DISABLE_COLOR_PRINTING = False
 
 LOG_ALL_EVENTS = os.getenv('LOG_ALL_EVENTS', 'False').lower() in ['true', '1', 'yes']
@@ -82,16 +87,17 @@ LOG_COLORS: Mapping[str, ColorType] = {
 class StackInfoFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
         if record.levelno >= logging.ERROR:
-            # LogRecord attributes are dynamically typed
-
-            # Capture the current stack trace as a string
-            stack = traceback.format_stack()
-            # Remove the last entries which are related to the logging machinery
-            stack = stack[:-3]  # Adjust this number if needed
-            # Join the stack frames into a single string
-            stack_str = ''.join(stack)
-            setattr(record, 'stack_info', stack_str)
-            setattr(record, 'exc_info', sys.exc_info())
+            # Only add stack trace info if there's an actual exception
+            exc_info = sys.exc_info()
+            if exc_info and exc_info[0] is not None:
+                # Capture the current stack trace as a string
+                stack = traceback.format_stack()
+                # Remove the last entries which are related to the logging machinery
+                stack = stack[:-3]  # Adjust this number if needed
+                # Join the stack frames into a single string
+                stack_str = ''.join(stack)
+                setattr(record, 'stack_info', stack_str)
+                setattr(record, 'exc_info', exc_info)
         return True
 
 
@@ -239,7 +245,7 @@ class SensitiveDataFilter(logging.Filter):
             if (
                 len(value) > 2
                 and value != 'default'
-                and any(s in key_upper for s in ('SECRET', 'KEY', 'CODE', 'TOKEN'))
+                and any(s in key_upper for s in ('SECRET', '_KEY', '_CODE', '_TOKEN'))
             ):
                 sensitive_values.append(value)
 
@@ -260,6 +266,7 @@ class SensitiveDataFilter(logging.Filter):
             'modal_api_token_secret',
             'llm_api_key',
             'sandbox_env_github_token',
+            'runloop_api_key',
             'daytona_api_key',
         ]
 
@@ -278,27 +285,31 @@ class SensitiveDataFilter(logging.Filter):
         return True
 
 
-def get_console_handler(
-    log_level: int = logging.INFO, extra_info: str | None = None
-) -> logging.StreamHandler:
+def get_console_handler(log_level: int = logging.INFO) -> logging.StreamHandler:
     """Returns a console handler for logging."""
     console_handler = logging.StreamHandler()
     console_handler.setLevel(log_level)
     formatter_str = '\033[92m%(asctime)s - %(name)s:%(levelname)s\033[0m: %(filename)s:%(lineno)s - %(message)s'
-    if extra_info:
-        formatter_str = f'{extra_info} - ' + formatter_str
     console_handler.setFormatter(ColoredFormatter(formatter_str, datefmt='%H:%M:%S'))
     return console_handler
 
 
 def get_file_handler(
-    log_dir: str, log_level: int = logging.INFO
-) -> logging.FileHandler:
+    log_dir: str,
+    log_level: int = logging.INFO,
+    when: str = 'd',
+    backup_count: int = 7,
+    utc: bool = False,
+) -> TimedRotatingFileHandler:
     """Returns a file handler for logging."""
     os.makedirs(log_dir, exist_ok=True)
-    timestamp = datetime.now().strftime('%Y-%m-%d')
-    file_name = f'openhands_{timestamp}.log'
-    file_handler = logging.FileHandler(os.path.join(log_dir, file_name))
+    file_name = 'openhands.log'
+    file_handler = TimedRotatingFileHandler(
+        os.path.join(log_dir, file_name),
+        when=when,
+        backupCount=backup_count,
+        utc=utc,
+    )
     file_handler.setLevel(log_level)
     if LOG_JSON:
         file_handler.setFormatter(json_formatter())
@@ -307,7 +318,7 @@ def get_file_handler(
     return file_handler
 
 
-def json_formatter():
+def json_formatter() -> JsonFormatter:
     return JsonFormatter(
         '{message}{levelname}',
         style='{',
@@ -320,10 +331,7 @@ def json_log_handler(
     level: int = logging.INFO,
     _out: TextIO = sys.stdout,
 ) -> logging.Handler:
-    """
-    Configure logger instance for structured logging as json lines.
-    """
-
+    """Configure logger instance for structured logging as json lines."""
     handler = logging.StreamHandler(_out)
     handler.setLevel(level)
     handler.setFormatter(json_formatter())
@@ -364,7 +372,6 @@ if DEBUG:
     openhands_logger.addFilter(StackInfoFilter())
 
 if current_log_level == logging.DEBUG:
-    LOG_TO_FILE = True
     openhands_logger.debug('DEBUG mode enabled.')
 
 if LOG_JSON:
@@ -388,10 +395,22 @@ if LOG_TO_FILE:
     )  # default log to project root
     openhands_logger.debug(f'Logging to file in: {LOG_DIR}')
 
-# Exclude LiteLLM from logging output
+# Exclude LiteLLM from logging output as it can leak keys
 logging.getLogger('LiteLLM').disabled = True
 logging.getLogger('LiteLLM Router').disabled = True
 logging.getLogger('LiteLLM Proxy').disabled = True
+
+# Exclude loquacious loggers
+LOQUACIOUS_LOGGERS = [
+    'engineio',
+    'engineio.server',
+    'socketio',
+    'socketio.client',
+    'socketio.server',
+]
+
+for logger_name in LOQUACIOUS_LOGGERS:
+    logging.getLogger(logger_name).setLevel('WARNING')
 
 
 class LlmFileHandler(logging.FileHandler):
@@ -469,3 +488,25 @@ def _setup_llm_logger(name: str, log_level: int) -> logging.Logger:
 
 llm_prompt_logger = _setup_llm_logger('prompt', current_log_level)
 llm_response_logger = _setup_llm_logger('response', current_log_level)
+
+
+class OpenHandsLoggerAdapter(logging.LoggerAdapter):
+    extra: dict
+
+    def __init__(
+        self, logger: logging.Logger = openhands_logger, extra: dict | None = None
+    ) -> None:
+        self.logger = logger
+        self.extra = extra or {}
+
+    def process(
+        self, msg: str, kwargs: MutableMapping[str, Any]
+    ) -> tuple[str, MutableMapping[str, Any]]:
+        """If 'extra' is supplied in kwargs, merge it with the adapters 'extra' dict
+        Starting in Python 3.13, LoggerAdapter's merge_extra option will do this.
+        """
+        if 'extra' in kwargs and isinstance(kwargs['extra'], dict):
+            kwargs['extra'] = {**self.extra, **kwargs['extra']}
+        else:
+            kwargs['extra'] = self.extra
+        return msg, kwargs

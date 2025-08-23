@@ -8,6 +8,9 @@ enum ObservationType {
   // The HTML contents of a URL
   BROWSE = "browse",
 
+  // Interactive browsing
+  BROWSE_INTERACTIVE = "browse_interactive",
+
   // The output of a command
   RUN = "run",
 
@@ -26,8 +29,20 @@ enum ObservationType {
   // A response to the agent's thought (usually a static message)
   THINK = "think",
 
+  // An observation that shows agent's context extension
+  RECALL = "recall",
+
+  // A MCP tool call observation
+  MCP = "mcp",
+
+  // An error observation
+  ERROR = "error",
+
   // A no-op observation
   NULL = "null",
+
+  // Result of a task tracking operation
+  TASK_TRACKING = "task_tracking",
 }
 
 export default ObservationType;
