@@ -213,6 +213,23 @@ class DockerRuntime(ActionExecutionClient):
             self.set_runtime_status(RuntimeStatus.READY)
         self._runtime_initialized = True
 
+        for network_name in self.config.sandbox.additional_networks:
+            try:
+                network = self.docker_client.networks.get(network_name)
+                if self.container is not None:
+                    network.connect(self.container)
+                else:
+                    self.log(
+                        'warning',
+                        f'Container not available to connect to network {network_name}',
+                    )
+            except Exception as e:
+                self.log(
+                    'error',
+                    f'Error: Failed to connect instance {self.container_name} to network {network_name}',
+                )
+                self.log('error', str(e))
+
     def maybe_build_runtime_container_image(self):
         if self.runtime_container_image is None:
             if self.base_container_image is None:
@@ -566,28 +583,6 @@ class DockerRuntime(ActionExecutionClient):
                 raise AgentRuntimeDisconnectedError(
                     f'Container {self.container_name} has exited.'
                 )
-            # 新增实际服务检测（关键修改） 等待服务整alive 已经启动。
-            healthcheck_url = f'http://localhost:{self._host_port}/alive'
-            try:
-                response = requests.get(
-                    healthcheck_url,
-                    timeout=5,
-                    headers={'User-Agent': 'OpenHandsRuntimeHealthCheck/1.0'},
-                )
-                response.raise_for_status()
-                # 新增JSON响应验证
-                health_data = response.json()
-
-                if health_data.get('status') != 'ok':
-                    raise ConnectionError(f'Invalid health status: {health_data}')
-
-                self.log('debug', f'健康检查通过: {healthcheck_url} 响应 {health_data}')
-            except requests.exceptions.HTTPError as e:
-                self.log('warning', f'健康检查HTTP异常: {e.response.status_code}')
-                raise ConnectionError(f'HTTP错误: {e.response.status_code}')
-            except requests.exceptions.JSONDecodeError:
-                self.log('error', f'无效的JSON响应: {response.text[:200]}')
-                raise ConnectionError('健康检查返回无效的JSON格式')
         except docker.errors.NotFound:
             raise AgentRuntimeNotFoundError(
                 f'Container {self.container_name} not found.'

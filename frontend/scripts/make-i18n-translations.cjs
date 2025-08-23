@@ -22,9 +22,6 @@ if (fs.existsSync(localesPath)) {
 
 // write translation files
 Object.entries(translationMap).forEach(([lang, transMap]) => {
-  if (lang == 'zh-CN') {
-    lang = 'zh'
-  }
   const filePath = path.join(__dirname, `../public/locales/${lang}/translation.json`);
   if (!fs.existsSync(filePath)) {
     fs.mkdirSync(path.dirname(filePath), { recursive: true });

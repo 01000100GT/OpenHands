@@ -45,11 +45,9 @@ async def list_files(
     path: str | None = None,
 ) -> list[str] | JSONResponse:
     """List files in the specified path.
-    列出指定路径中的文件
 
     This function retrieves a list of files from the agent's runtime file store,
     excluding certain system and hidden files/directories.
-    此函数从代理的运行时文件存储中检索文件列表，不包括某些系统和隐藏文件/目录
 
     To list files:
     ```sh
@@ -130,7 +128,6 @@ async def select_file(
     file: str, conversation: ServerConversation = Depends(get_conversation)
 ) -> FileResponse | JSONResponse:
     """Retrieve the content of a specified file.
-    检索指定文件的内容
 
     To select a file:
     ```sh
